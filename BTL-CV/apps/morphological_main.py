@@ -10,7 +10,7 @@ from apps.morphological_skeletonization import morph_thinning_skeletonize
 
 def app():
     selected_box = st.sidebar.selectbox('Choose one of the operations',
-                                        ('None', 'Erosion', 'Dilation', 'Opening', 'Closing', 'Skeletonization'))
+                                        ('None', 'Erosion', 'Dilation', 'Opening', 'Closing', 'Skeletonization' , 'Border Seperation', 'Gradient'))
 
     # Begin upload img
 
@@ -31,10 +31,10 @@ def app():
         st.subheader("Select from the following morphological", anchor=None)
         st.header("CV", anchor=None)
 
-        st.subheader("Available Filters", anchor=None)
+        st.subheader("Available Morphological Operations", anchor=None)
 
         st.markdown(
-            '<ul> <li> Erosion <li> Dilation <li> Opening <li> Closing <li> Skeletonization </ul>',
+            '<ul> <li> Erosion <li> Dilation <li> Opening <li> Closing <li> Skeletonization <li> Border Seperation <li> Gradient </ul>',
             unsafe_allow_html=True)
 
     # Begin Erosion
@@ -171,3 +171,62 @@ def app():
             st.image(resized_image, caption=f"Image with Skeletonization", use_column_width=True)
 
     # End Skeletonization
+
+    # Begin Border Seperation
+
+    def border_seperation(original_image, level):
+        # Read Image
+        gray_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+        img = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
+
+        binr = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY_INV)[1]
+
+        kernel = np.ones((3, 3), np.uint8)
+        erosion_img = cv2.erode(original_image, kernel, iterations=1)
+        output_image = cv2.subtract(original_image, erosion_img)
+        return output_image
+
+    if selected_box == 'Border Seperation':
+
+        selected_box_operation_level = st.sidebar.selectbox('Choose one of the level', (1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+
+        st.title('Border Seperation Morphological')
+        image = load_image()
+        useWH = st.button('CONVERT')
+
+        if useWH:
+            resized_image = border_seperation(image, selected_box_operation_level)
+            st.image(resized_image, caption=f"Image with Border Seperation", use_column_width=True)
+
+    # End Border Seperation
+
+
+    # Begin GRADIENT
+
+    def gradient(original_image, level):
+        # Read Image
+        gray_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+        img = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
+
+        (thresh, blackAndWhiteImage) = cv2.threshold(
+            img, 127, 255, cv2.THRESH_BINARY)
+
+        kernel_size = (level, level)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, kernel_size)
+        output_image = cv2.morphologyEx(blackAndWhiteImage, cv2.MORPH_GRADIENT, kernel)
+
+        return output_image
+
+    if selected_box == 'Gradient':
+
+        selected_box_operation_level = st.sidebar.selectbox('Choose one of the level', (1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+
+        st.title('Gradient Morphological')
+        image = load_image()
+        useWH = st.button('CONVERT')
+
+        if useWH:
+            resized_image = gradient(image, selected_box_operation_level)
+            st.image(resized_image, caption=f"Image with Gradient", use_column_width=True)
+
+    # End Gradient
