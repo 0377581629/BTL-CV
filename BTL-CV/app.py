@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image, ImageOps
 import cv2
 from multiapp import MultiApp
-from apps import home, morphological
+from apps import home, morphological_main
 
 
 app = MultiApp()
@@ -22,7 +22,7 @@ app = MultiApp()
 
 # Add all your application here
 app.add_app("Home", home.app)
-app.add_app("Morphological", morphological.app)
+app.add_app("Morphological", morphological_main.app)
 
 
 # The main app
