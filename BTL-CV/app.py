@@ -1,11 +1,6 @@
-import streamlit as st
-import numpy as np
-import pandas as pd
-from PIL import Image, ImageOps
-import cv2
 from multiapp import MultiApp
-from apps import home, morphological_main
-
+from apps import home
+from apps.morphological import morphological_main
 
 app = MultiApp()
 
