@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image, ImageOps
 import cv2
 from multiapp import MultiApp
-from apps import home, morphological_main
+from apps import home, morphological_main , nonlinearfilter_main
 
 
 app = MultiApp()
@@ -23,7 +23,7 @@ app = MultiApp()
 # Add all your application here
 app.add_app("Home", home.app)
 app.add_app("Morphological", morphological_main.app)
-
+app.add_app("Non-linear filter" , nonlinearfilter_main.app)
 
 # The main app
 app.run()
