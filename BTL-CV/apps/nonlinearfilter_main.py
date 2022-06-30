@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter
 import copy
 def app():
     selected_box = st.sidebar.selectbox('Choose one filter',
-                                        ('None', 'Median', 'Bilateral', 'Entropy','Max/Min'))
+                                        ('None', 'Median', 'Bilateral', 'Entropy','Max/Min','Kuwahara'))
 
     if selected_box == 'None':
         st.title('Non-Linear Filter')
@@ -135,6 +135,51 @@ def app():
             if convert_btn:
                 output_image = max_min_filtering(image, mode , filter_size)
                 st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
+
+    #   Kuwahara filter
+    def kuwahara_filter(original_image, kernel_size):
+
+        height, width, channel = original_image.shape[0], original_image.shape[1], original_image.shape[2]
+
+        r = int((kernel_size - 1) / 2)
+        r = r if r >= 2 else 2
+
+        image = np.pad(original_image, ((r, r), (r, r), (0, 0)), "edge")
+
+        average, variance = cv2.integral2(image)
+        average = (average[:-r - 1, :-r - 1] + average[r + 1:, r + 1:] -
+                   average[r + 1:, :-r - 1] - average[:-r - 1, r + 1:]) / (r +
+                                                                           1) ** 2
+        variance = ((variance[:-r - 1, :-r - 1] + variance[r + 1:, r + 1:] -
+                     variance[r + 1:, :-r - 1] - variance[:-r - 1, r + 1:]) /
+                    (r + 1) ** 2 - average ** 2).sum(axis=2)
+
+        def filter(i, j):
+            return np.array([
+                average[i, j], average[i + r, j], average[i, j + r], average[i + r,
+                                                                             j + r]
+            ])[(np.array([
+                variance[i, j], variance[i + r, j], variance[i, j + r],
+                variance[i + r, j + r]
+            ]).argmin(axis=0).flatten(), j.flatten(),
+                i.flatten())].reshape(width, height, channel).transpose(1, 0, 2)
+
+        filtered_image = filter(*np.meshgrid(np.arange(height), np.arange(width)))
+
+        filtered_image = filtered_image.astype(image.dtype)
+        filtered_image = filtered_image.copy()
+
+        return filtered_image
+
+
+    if selected_box == "Kuwahara":
+        image = load_image()
+        win_size = st.sidebar.selectbox("Choose filter size:", (5, 7, 9))
+        st.title('Kuwahara filter')
+        convert_btn = st.button('CONVERT')
+        if convert_btn:
+            output_image = kuwahara_filter(image, win_size)
+            st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
 
 
 
