@@ -1,7 +1,7 @@
 from multiapp import MultiApp
 from apps import home
 from apps.morphological import morphological_main
-from apps.arithmetic_operations import addition_subtraction
+from apps.arithmetic_operations import arithmetic_main
 
 app = MultiApp()
 
@@ -19,7 +19,7 @@ app = MultiApp()
 # Add all your application here
 app.add_app("Home", home.app)
 app.add_app("Morphological", morphological_main.app)
-app.add_app("Arithmetic", addition_subtraction.app)
+app.add_app("Arithmetic", arithmetic_main.app)
 
 
 # The main app
