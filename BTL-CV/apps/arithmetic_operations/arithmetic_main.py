@@ -247,7 +247,7 @@ def app():
         
     if selected_box == 'Filters':
         option = st.sidebar.selectbox('Choose one of filters',
-                                     ('None','Bright', 'Detail Enchance', 'Invert', 'Summer', 'Winter', 'Daylight', 'High Contrast', 'Sepia', 'Splash', 'Emboss', '60s TV', 'Dual tone', 'Cartoon', 'Pencil Drawing', 'Comic'))
+                                     ('None','Bright', 'Detail Enchance', 'Invert', 'Summer', 'Winter', 'Daylight', 'High Contrast', 'Sepia', 'Splash', 'Emboss', '60s TV', 'Dual Tone', 'Cartoon', 'Pencil Drawing', 'Comic'))
         
         if option == 'None':
             st.title('Image Filters')
@@ -257,7 +257,7 @@ def app():
 
             st.subheader("Available Filters", anchor=None)
 
-            st.markdown('<ul> <li> Bright <li>  Detail Enchance  <li> Invert<li> Summer   <li> Winter  <li> Daylight <li> High Contrast<li> Sepia  <li> Splash<li> Emboss   <li> 60s TV  <li> Dual tone <li> Cartoon <li>Pencil Drawing <li>Comic </ul>', unsafe_allow_html=True)
+            st.markdown('<ul> <li> Bright <li>  Detail Enchance  <li> Invert<li> Summer   <li> Winter  <li> Daylight <li> High Contrast<li> Sepia  <li> Splash<li> Emboss   <li> 60s TV  <li> Dual Tone <li> Cartoon <li>Pencil Drawing <li>Comic </ul>', unsafe_allow_html=True)
         
 
 
