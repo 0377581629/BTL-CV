@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+from apps.morphological.convert_img_to_binary import simple_thresholding_thresh_binary, \
+    simple_thresholding_thresh_binary_inv, otsu_thresholding, adaptive_mean_thresholding, adaptive_gaussian_thresholding
 from apps.morphological.convex_hull import convex_hull
 from apps.morphological.extract_components import extract_components
 from apps.morphological.region_filling import region_filling
@@ -12,9 +14,10 @@ from apps.morphological.skeletonization import morph_thinning_skeletonize
 
 def app():
     selected_box = st.sidebar.selectbox('Choose one of the operations',
-                                        ('None', 'Erosion', 'Dilation', 'Opening', 'Closing', 'Skeletonization',
-                                         'Border Seperation', 'Gradient', 'Top Hat', 'Black Hat', 'Region Filling',
-                                         'Extract Components','Convex Hull'))
+                                        ('None', 'Convert to Binary', 'Erosion', 'Dilation', 'Opening', 'Closing',
+                                         'Skeletonization',
+                                         'Border Separation', 'Gradient', 'Top Hat', 'Black Hat', 'Region Filling',
+                                         'Extract Components', 'Convex Hull'))
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -40,8 +43,78 @@ def app():
         st.subheader("Available Morphological Operations", anchor=None)
 
         st.markdown(
-            '<ul> <li> Erosion <li> Dilation <li> Opening <li> Closing <li> Skeletonization <li> Border Seperation <li> Gradient <li> Top Hat <li> Black Hat <li> Region Filling <li> Extract Components <li> Convex Hull </ul>',
+            '<ul> <li> Convert to Binary <li> Erosion <li> Dilation <li> Opening <li> Closing <li> Skeletonization '
+            '<li> Border Separation <li> Gradient <li> Top Hat <li> Black Hat <li> Region Filling <li> Extract '
+            'Components <li> Convex Hull </ul>',
             unsafe_allow_html=True)
+
+    # Begin Convert to Binary
+
+    if selected_box == 'Convert to Binary':
+
+        selected_box_type_of_convert = st.sidebar.selectbox('Choose one of the type',
+                                                            ('Simple Thresholding', 'Simple Thresholding Invert', 'Otsu Thresholding', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding'))
+
+        if selected_box_type_of_convert == 'Simple Thresholding':
+            selected_box_operation_level = st.sidebar.selectbox('Choose threshold',
+                                                                (
+                                                                    10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120,
+                                                                    130,
+                                                                    140,
+                                                                    150, 160, 170, 180, 190, 200, 210, 220, 230, 240,
+                                                                    250))
+            st.title('Simple Thresholding')
+            image = load_image()
+            useWH = st.button('CONVERT')
+
+            if useWH:
+                resized_image = simple_thresholding_thresh_binary(image, selected_box_operation_level)
+                st.image(resized_image, caption=f"Image with Simple Thresholding", use_column_width=True)
+
+        if selected_box_type_of_convert == 'Simple Thresholding Invert':
+            selected_box_operation_level = st.sidebar.selectbox('Choose threshold',
+                                                                (
+                                                                    10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120,
+                                                                    130,
+                                                                    140,
+                                                                    150, 160, 170, 180, 190, 200, 210, 220, 230, 240,
+                                                                    250))
+            st.title('Simple Thresholding Invert')
+            image = load_image()
+            useWH = st.button('CONVERT')
+
+            if useWH:
+                resized_image = simple_thresholding_thresh_binary_inv(image, selected_box_operation_level)
+                st.image(resized_image, caption=f"Image with Simple Thresholding Invert", use_column_width=True)
+
+        if selected_box_type_of_convert == 'Otsu Thresholding':
+            st.title('Otsu Thresholding')
+            image = load_image()
+            useWH = st.button('CONVERT')
+
+            if useWH:
+                thresh, resized_image = otsu_thresholding(image)
+                st.image(resized_image, caption=f"Image with Otsu Thresholding with Threshold = " + str(thresh), use_column_width=True)
+
+        if selected_box_type_of_convert == 'Adaptive Mean Thresholding':
+            st.title('Adaptive Mean Thresholding')
+            image = load_image()
+            useWH = st.button('CONVERT')
+
+            if useWH:
+                resized_image = adaptive_mean_thresholding(image)
+                st.image(resized_image, caption=f"Image with Adaptive Mean Thresholding ", use_column_width=True)
+
+        if selected_box_type_of_convert == 'Adaptive Gaussian Thresholding':
+            st.title('Adaptive Gaussian Thresholding')
+            image = load_image()
+            useWH = st.button('CONVERT')
+
+            if useWH:
+                resized_image = adaptive_gaussian_thresholding(image)
+                st.image(resized_image, caption=f"Image with Adaptive Gaussian Thresholding ", use_column_width=True)
+
+    # End Convert to Binary
 
     # Begin Erosion
 
