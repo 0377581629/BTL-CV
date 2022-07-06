@@ -21,8 +21,8 @@ app = MultiApp()
 # Add all your application here
 app.add_app("Home", home.app)
 app.add_app("Morphological", morphological_main.app)
-# app.add_app("Arithmetic", arithmetic_main.app)
-# app.add_app("Non-linear filter", nonlinearfilter_main.app)
+app.add_app("Arithmetic", arithmetic_main.app)
+app.add_app("Non-linear filter", nonlinearfilter_main.app)
 
 # The main app
 app.run()
