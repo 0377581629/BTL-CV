@@ -255,9 +255,9 @@ def app():
 
     # End Skeletonization
 
-    # Begin Border Seperation
+    # Begin Border Separation
 
-    def border_seperation(original_image, level):
+    def border_separation(original_image, level):
         # Read Image
         gray_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
         img = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
@@ -269,20 +269,20 @@ def app():
         output_image = cv2.subtract(original_image, erosion_img)
         return output_image
 
-    if selected_box == 'Border Seperation':
+    if selected_box == 'Border Separation':
 
         selected_box_operation_level = st.sidebar.selectbox('Choose number of the erosion in algorithm',
                                                             (1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
 
-        st.title('Border Seperation Morphological')
+        st.title('Border Separation Morphological')
         image = load_image()
         useWH = st.button('CONVERT')
 
         if useWH:
-            resized_image = border_seperation(image, selected_box_operation_level)
-            st.image(resized_image, caption=f"Image with Border Seperation", use_column_width=True)
+            resized_image = border_separation(image, selected_box_operation_level)
+            st.image(resized_image, caption=f"Image with Border Separation", use_column_width=True)
 
-    # End Border Seperation
+    # End Border Separation
 
     # Begin GRADIENT
 
