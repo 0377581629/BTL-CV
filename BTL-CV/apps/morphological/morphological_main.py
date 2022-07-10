@@ -16,8 +16,8 @@ def app():
     selected_box = st.sidebar.selectbox('Choose one of the operations',
                                         ('None', 'Convert to Binary', 'Erosion', 'Dilation', 'Opening', 'Closing',
                                          'Skeletonization',
-                                         'Border Separation', 'Gradient', 'Top Hat', 'Black Hat', 'Region Filling',
-                                         'Extract Components', 'Convex Hull'))
+                                         'Border Separation', 'Gradient', 'Region Filling',
+                                         'Extract Components', 'Convex Hull', 'Top Hat', 'Black Hat'))
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -44,8 +44,8 @@ def app():
 
         st.markdown(
             '<ul> <li> Convert to Binary <li> Erosion <li> Dilation <li> Opening <li> Closing <li> Skeletonization '
-            '<li> Border Separation <li> Gradient <li> Top Hat <li> Black Hat <li> Region Filling <li> Extract '
-            'Components <li> Convex Hull </ul>',
+            '<li> Border Separation <li> Gradient <li> Region Filling <li> Extract '
+            'Components <li> Convex Hull <li> Top Hat <li> Black Hat </ul>',
             unsafe_allow_html=True)
 
     # Begin Convert to Binary
@@ -53,7 +53,9 @@ def app():
     if selected_box == 'Convert to Binary':
 
         selected_box_type_of_convert = st.sidebar.selectbox('Choose one of the type',
-                                                            ('Simple Thresholding', 'Simple Thresholding Invert', 'Otsu Thresholding', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding'))
+                                                            ('Simple Thresholding', 'Simple Thresholding Invert',
+                                                             'Otsu Thresholding', 'Adaptive Mean Thresholding',
+                                                             'Adaptive Gaussian Thresholding'))
 
         if selected_box_type_of_convert == 'Simple Thresholding':
             selected_box_operation_level = st.sidebar.selectbox('Choose threshold',
@@ -94,7 +96,8 @@ def app():
 
             if useWH:
                 thresh, resized_image = otsu_thresholding(image)
-                st.image(resized_image, caption=f"Image with Otsu Thresholding with Threshold = " + str(thresh), use_column_width=True)
+                st.image(resized_image, caption=f"Image with Otsu Thresholding with Threshold = " + str(thresh),
+                         use_column_width=True)
 
         if selected_box_type_of_convert == 'Adaptive Mean Thresholding':
             st.title('Adaptive Mean Thresholding')
