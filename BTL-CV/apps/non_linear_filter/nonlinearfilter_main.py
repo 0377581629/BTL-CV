@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import streamlit as st
 from PIL import Image, ImageFilter
+from scipy.signal import convolve2d
 from skimage.util import random_noise
 
 
@@ -99,45 +100,61 @@ def app():
                 st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
 
     #   Kuwahara filter
-    def kuwahara_filter(original_image, kernel_size):
+    def kuwahara_filter(original, winsize):
 
-        height, width, channel = original_image.shape[0], original_image.shape[1], original_image.shape[2]
+        image = original.astype(np.float64)
+        # make sure window size is correct
+        if winsize % 4 != 1:
+            raise Exception("Invalid winsize %s: winsize must follow formula: w = 4*n+1." % winsize)
 
-        r = int((kernel_size - 1) / 2)
-        r = r if r >= 2 else 2
+        # Build subwindows
+        tmpAvgKerRow = np.hstack((np.ones((1, (winsize - 1) // 2 + 1)), np.zeros((1, (winsize - 1) // 2))))
+        tmpPadder = np.zeros((1, winsize))
+        tmpavgker = np.tile(tmpAvgKerRow, ((winsize - 1) // 2 + 1, 1))
+        tmpavgker = np.vstack((tmpavgker, np.tile(tmpPadder, ((winsize - 1) // 2, 1))))
+        tmpavgker = tmpavgker / np.sum(tmpavgker)
 
-        image = np.pad(original_image, ((r, r), (r, r), (0, 0)), "edge")
+        # tmpavgker is a 'north-west' subwindow (marked as 'a' above) #
+        # we build a vector of convolution kernels for computing average and
+        # variance
+        avgker = np.empty((4, winsize, winsize))  # make an empty vector of arrays
+        avgker[0] = tmpavgker  # North-west (a)
+        avgker[1] = np.fliplr(tmpavgker)  # North-east (b)
+        avgker[2] = np.flipud(tmpavgker)  # South-west (c)
+        avgker[3] = np.fliplr(avgker[2])  # South-east (d)
 
-        average, variance = cv2.integral2(image)
-        average = (average[:-r - 1, :-r - 1] + average[r + 1:, r + 1:] -
-                   average[r + 1:, :-r - 1] - average[:-r - 1, r + 1:]) / (r +
-                                                                           1) ** 2
-        variance = ((variance[:-r - 1, :-r - 1] + variance[r + 1:, r + 1:] -
-                     variance[r + 1:, :-r - 1] - variance[:-r - 1, r + 1:]) /
-                    (r + 1) ** 2 - average ** 2).sum(axis=2)
+        # Create a pixel-by-pixel square of the image
+        squaredImg = image ** 2
 
-        def filter(i, j):
-            return np.array([
-                average[i, j], average[i + r, j], average[i, j + r], average[i + r,
-                                                                             j + r]
-            ])[(np.array([
-                variance[i, j], variance[i + r, j], variance[i, j + r],
-                variance[i + r, j + r]
-            ]).argmin(axis=0).flatten(), j.flatten(),
-                i.flatten())].reshape(width, height, channel).transpose(1, 0, 2)
+        # preallocate these arrays to make it apparently %15 faster
+        avgs = np.zeros([4, image.shape[0], image.shape[1]])
+        stddevs = avgs.copy()
 
-        filtered_image = filter(*np.meshgrid(np.arange(height), np.arange(width)))
+        # Calculation of averages and variances on subwindows
+        for k in range(4):
+            # mean on subwindow
+            avgs[k] = convolve2d(image, avgker[k], mode='same')
+            # mean of squares on subwindow
+            stddevs[k] = convolve2d(squaredImg, avgker[k], mode='same')
+            # variance on subwindow
+            stddevs[k] = stddevs[k] - avgs[k] ** 2
+        # Choice of index with minimum variance
+        indices = np.argmin(stddevs, 0)  # returns index of subwindow with smallest variance
 
-        filtered_image = filtered_image.astype(image.dtype)
-        filtered_image = filtered_image.copy()
+        # Building the filtered image (with nested for loops)
+        filtered = np.zeros(original.shape)
+        for row in range(original.shape[0]):
+            for col in range(original.shape[1]):
+                filtered[row, col] = avgs[indices[row, col], row, col]
 
-        return filtered_image
+        # filtered=filtered.astype(np.uint8)
+        return filtered.astype(np.uint8)
 
     if selected_box == "Kuwahara":
         image = load_image()
-        win_size = st.sidebar.selectbox("Choose filter size:", (5, 7, 9))
+        win_size = st.sidebar.selectbox("Choose filter size:", (5, 9, 25))
         st.title('Kuwahara filter')
         convert_btn = st.button('CONVERT')
         if convert_btn:
-            output_image = kuwahara_filter(image, win_size)
+            output_image = kuwahara_filter(cv2.cvtColor(image,cv2.COLOR_BGR2GRAY), win_size)
             st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
