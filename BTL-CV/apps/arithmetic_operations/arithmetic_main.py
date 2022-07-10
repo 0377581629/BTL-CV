@@ -7,7 +7,7 @@ from streamlit_cropper import st_cropper
 import copy
 
 from apps.arithmetic_operations.rotation import *
-from apps.arithmetic_operations.convert_to_binary import *
+# from apps.arithmetic_operations.convert_to_binary import *
 from apps.arithmetic_operations.filter import *
 
 
