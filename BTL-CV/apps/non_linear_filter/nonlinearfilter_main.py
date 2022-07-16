@@ -8,7 +8,7 @@ from skimage.util import random_noise
 
 def app():
     selected_box = st.sidebar.selectbox('Choose one filter',
-                                        ('None', 'Median', 'Bilateral', 'Max/Min', 'Kuwahara'))
+                                        ('None', 'Median', 'Bilateral', 'Max/Min', 'Kuwahara' , 'Add noise'))
 
     if selected_box == 'None':
         st.title('Non-Linear Filter')
@@ -34,7 +34,7 @@ def app():
             return None
 
     # add noise to image
-    def add_noise(original_image, mode="s&p"):
+    def add_noise(original_image, mode):
         noise_img = random_noise(original_image, mode)
         # print(noise_img)
         noise_img = np.array(255 * noise_img, dtype="uint8")
@@ -47,17 +47,23 @@ def app():
         return output_img
 
     if selected_box == 'Median':
-        noise_mode = st.sidebar.selectbox('Choose noise mode', ('gaussian', 's&p', 'poisson', 'speckle'))
         median_level = st.sidebar.selectbox('Choose one of the level', (1, 3, 5, 7))
         st.title('Median filter')
         image = load_image()
-        convert_btn = st.button('ADD NOISE AND CONVERT')
-        col1, col2 = st.columns(2)
+        convert_btn = st.button('CONVERT')
+        if convert_btn:
+            output_image = median_filter(image, median_level)
+            st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
+
+    #         Add noise to image
+    if selected_box == 'Add noise':
+        noise_mode = st.sidebar.selectbox('Choose noise mode', ('gaussian', 's&p', 'poisson', 'speckle'))
+        st.title('Add noise to image')
+        image = load_image()
+        convert_btn = st.button('ADD NOISE')
         if convert_btn:
             noise_image = add_noise(image, noise_mode)
-            output_image = median_filter(noise_image, median_level)
             st.image(noise_image, caption=f"Image with Noise", use_column_width=True, clamp=True)
-            st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
 
     #   Bilateral filter: làm mịn ảnh
     def bilateral_filter(original_image, radius, sigmaColor=75, sigmaSpace=75):
@@ -67,7 +73,7 @@ def app():
 
     if selected_box == "Bilateral":
         image = load_image()
-        radius_level = st.sidebar.selectbox('Choose radius ', (1, 2, 3, 4, 5))
+        radius_level = st.sidebar.selectbox('Choose diameter  ', (1, 2, 3, 4, 5, 6, 7, 8, 9))
         # sigmaColor = st.sidebar.slider("Color: ", 0, 200, 75, 5, key="color", on_change=bilateral_filter, args=(image, radius_level))
         # sigmaSpace = st.sidebar.slider("Space: ", 0, 200, 75, 5, key="space", on_change=bilateral_filter, args=(image, radius_level))
         color = st.sidebar.slider("Color: ", 0, 200, 75, 5, key="color")
@@ -152,7 +158,7 @@ def app():
 
     if selected_box == "Kuwahara":
         image = load_image()
-        win_size = st.sidebar.selectbox("Choose filter size:", (5, 9, 25))
+        win_size = st.sidebar.selectbox("Choose filter size:", (5, 9, 13, 17, 21, 25))
         st.title('Kuwahara filter')
         convert_btn = st.button('CONVERT')
         if convert_btn:
