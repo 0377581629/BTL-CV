@@ -47,7 +47,7 @@ def app():
         return output_img
 
     if selected_box == 'Median':
-        median_level = st.sidebar.selectbox('Choose one of the level', (1, 3, 5, 7))
+        median_level = st.sidebar.selectbox('Choose one of the level', (1, 3, 5, 7, 9))
         st.title('Median filter')
         image = load_image()
         convert_btn = st.button('CONVERT')
@@ -89,7 +89,7 @@ def app():
         if mode == "Max":
             output_image = original_image.filter(ImageFilter.MaxFilter(kernel_size))
         if mode == "Min":
-            output_image = original_image.filter(ImageFilter.MaxFilter(kernel_size))
+            output_image = original_image.filter(ImageFilter.MinFilter(kernel_size))
         return output_image
 
     if selected_box == "Max/Min":
@@ -98,7 +98,7 @@ def app():
             image = Image.open(img_file_buffer)
             st.image(image, caption=f"Original Image", use_column_width=True)
             mode = st.sidebar.selectbox("Choose mode", ("Max", "Min"))
-            filter_size = st.sidebar.slider("Choose filter size: ", 1, 5, 3, 2, key="filter_size")
+            filter_size = st.sidebar.selectbox("Choose filter size: ", (1, 3, 5, 7, 9))
             st.title('Max/Min filter')
             convert_btn = st.button('CONVERT')
             if convert_btn:
@@ -162,5 +162,5 @@ def app():
         st.title('Kuwahara filter')
         convert_btn = st.button('CONVERT')
         if convert_btn:
-            output_image = kuwahara_filter(cv2.cvtColor(image,cv2.COLOR_BGR2GRAY), win_size)
+            output_image = kuwahara_filter(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), win_size)
             st.image(output_image, caption=f"Output image", use_column_width=True, clamp=True)
